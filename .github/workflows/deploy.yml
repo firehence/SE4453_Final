@@ -23,22 +23,22 @@ jobs:
       # Login to ACR
       - name: Login to ACR
         run: |
-          az acr login --name myacrname
+          az acr login --name se4453finalacr 
 
       # Build Docker Image
       - name: Build Docker Image
         run: |
-          docker build -t myacrname.azurecr.io/myapp:latest .
+          docker build -t se4453finalacr.azurecr.io/accessfit:latest .
 
       # Push Docker Image to ACR
       - name: Push Docker Image
         run: |
-          docker push myacrname.azurecr.io/myapp:latest
+          docker push se4453finalacr.azurecr.io/accessfit:latest
 
       # Deploy to Azure App Service
       - name: Deploy to App Service
         uses: azure/webapps-deploy@v2
         with:
-          app-name: myappservice
+          app-name: SE4453app
           slot-name: production
-          images: myacrname.azurecr.io/myapp:latest
+          images: se4453finalacr.azurecr.io/accessfit:latest
