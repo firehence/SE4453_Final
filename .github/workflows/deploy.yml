@@ -23,7 +23,7 @@ jobs:
     # 3. ACR'ye Kimlik Doğrulama
     - name: Authenticate with Azure Container Registry
       run: |
-        az acr login --se4453finalacr
+        az acr login --name se4453finalacr  # Container Registry adı ile güncelleme yapıldı
 
     # 4. Docker Image Oluştur ve ACR'ye Gönder
     - name: Build and Push Docker Image to ACR
