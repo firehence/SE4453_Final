@@ -10,32 +10,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout code
+      # 1. Checkout code
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Login to Azure using service principal credentials
+      # 2. Login to Azure using Service Principal credentials stored in GitHub Secrets
       - name: Login to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # Login to Azure Container Registry (ACR)
+      # 3. Login to Azure Container Registry (ACR)
       - name: Login to ACR
         run: |
-          az acr login --name se4453finalacr 
+          az acr login --name se4453finalacr
 
-      # Build Docker Image
+      # 4. Build Docker image
       - name: Build Docker Image
         run: |
           docker build -t se4453finalacr.azurecr.io/accessfit:latest .
 
-      # Push Docker Image to ACR
+      # 5. Push Docker image to ACR
       - name: Push Docker Image
         run: |
           docker push se4453finalacr.azurecr.io/accessfit:latest
 
-      # Deploy Docker image to Azure App Service
+      # 6. Deploy to Azure App Service
       - name: Deploy to App Service
         uses: azure/webapps-deploy@v2
         with:
