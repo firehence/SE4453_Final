@@ -1,44 +1,37 @@
-name: Build and Deploy to Azure
+name: Deploy Flask App to Azure
 
 on:
   push:
     branches:
-      - main
+      - main  # Workflow, sadece "main" dalına push edildiğinde çalışır
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout code
-      - name: Checkout Code
-        uses: actions/checkout@v3
+    # 1. Kodları Depodan Çek
+    - name: Checkout Code
+      uses: actions/checkout@v3
 
-      # 2. Login to Azure using Service Principal credentials stored in GitHub Secrets
-      - name: Login to Azure
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+    # 2. Azure’a Giriş Yap
+    - name: Login to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # 3. Login to Azure Container Registry (ACR)
-      - name: Login to ACR
-        run: |
-          az acr login --name se4453finalacr
+    # 3. ACR'ye Kimlik Doğrulama
+    - name: Authenticate with Azure Container Registry
+      run: |
+        az acr login --se4453finalacr
 
-      # 4. Build Docker image
-      - name: Build Docker Image
-        run: |
-          docker build -t se4453finalacr.azurecr.io/accessfit:latest .
+    # 4. Docker Image Oluştur ve ACR'ye Gönder
+    - name: Build and Push Docker Image to ACR
+      run: |
+        docker build -t se4453finalacr.azurecr.io/flask-app:latest .
+        docker push se4453finalacr.azurecr.io/flask-app:latest
 
-      # 5. Push Docker image to ACR
-      - name: Push Docker Image
-        run: |
-          docker push se4453finalacr.azurecr.io/accessfit:latest
-
-      # 6. Deploy to Azure App Service
-      - name: Deploy to App Service
-        uses: azure/webapps-deploy@v2
-        with:
-          app-name: SE4453app
-          slot-name: production
-          images: se4453finalacr.azurecr.io/accessfit:latest
+    # 5. App Service'i ACR'deki Yeni Image'i Kullanacak Şekilde Yapılandır
+    - name: Deploy to Azure App Service
+      run: |
+        az webapp config container set --name SE4453app --resource-group SE4453Final --docker-custom-image-name se4453finalacr.azurecr.io/flask-app:latest --docker-registry-server-url https://se4453finalacr.azurecr.io --docker-registry-server-user ${{ secrets.REGISTRY_USERNAME }} --docker-registry-server-password ${{ secrets.REGISTRY_PASSWORD }}
