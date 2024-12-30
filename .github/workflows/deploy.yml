@@ -14,13 +14,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Login to Azure
+      # Login to Azure using service principal credentials
       - name: Login to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      # Login to ACR
+      # Login to Azure Container Registry (ACR)
       - name: Login to ACR
         run: |
           az acr login --name se4453finalacr 
@@ -35,7 +35,7 @@ jobs:
         run: |
           docker push se4453finalacr.azurecr.io/accessfit:latest
 
-      # Deploy to Azure App Service
+      # Deploy Docker image to Azure App Service
       - name: Deploy to App Service
         uses: azure/webapps-deploy@v2
         with:
